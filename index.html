@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive Counting Game</title>
+  <style>
+    canvas {
+      border: 1px solid black;
+      display: block;
+      margin: auto;
+      background-color: #f0f0f0;
+    }
+    #message {
+      text-align: center;
+      font-size: 1.5em;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="gameCanvas" width="600" height="400"></canvas>
+<div id="message">Hãy nhấp vào các quả táo để đếm!</div>
+
+<script>
+  const canvas = document.getElementById("gameCanvas");
+  const ctx = canvas.getContext("2d");
+  let apples = [];
+  let count = 0;
+  const totalApples = 5;
+
+  // Khởi tạo các quả táo ở vị trí ngẫu nhiên
+  for (let i = 0; i < totalApples; i++) {
+    const x = Math.random() * (canvas.width - 40);
+    const y = Math.random() * (canvas.height - 40);
+    apples.push({ x: x, y: y, clicked: false });
+  }
+
+  // Hàm vẽ quả táo
+  function drawApple(x, y) {
+    ctx.beginPath();
+    ctx.arc(x + 20, y + 20, 20, 0, 2 * Math.PI);
+    ctx.fillStyle = "red";
+    ctx.fill();
+    ctx.beginPath();
+    ctx.moveTo(x + 20, y + 10);
+    ctx.lineTo(x + 20, y - 10);
+    ctx.strokeStyle = "brown";
+    ctx.lineWidth = 3;
+    ctx.stroke();
+  }
+
+  // Vẽ tất cả các quả táo
+  function drawAllApples() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    apples.forEach((apple) => {
+      if (!apple.clicked) drawApple(apple.x, apple.y);
+    });
+  }
+
+  // Kiểm tra khi người dùng nhấp vào một quả táo
+  canvas.addEventListener("click", (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+
+    apples.forEach((apple) => {
+      const dist = Math.sqrt(
+        (mouseX - (apple.x + 20)) ** 2 + (mouseY - (apple.y + 20)) ** 2
+      );
+      if (dist < 20 && !apple.clicked) {
+        apple.clicked = true;
+        count++;
+        document.getElementById("message").innerText = `Bạn đã đếm được ${count} quả táo!`;
+
+        if (count === totalApples) {
+          document.getElementById("message").innerText = "Chúc mừng! Bạn đã đếm đủ số quả táo!";
+        }
+      }
+    });
+    drawAllApples();
+  });
+
+  drawAllApples();
+</script>
+
+</body>
+</html>
